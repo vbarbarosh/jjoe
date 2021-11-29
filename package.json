@@ -1,0 +1,16 @@
+{
+  "name": "jjoe",
+  "version": "0.0.0",
+  "description": "Track changes in objects",
+  "dependencies": {
+    "@vbarbarosh/node-helpers": "@vbarbarosh/node-helpers",
+    "bluebird": "^3.7.2",
+    "bytes": "^3.1.1",
+    "cuid": "^2.1.8",
+    "esm": "^3.2.25",
+    "json-stable-stringify": "^1.0.1",
+    "jsondiffpatch": "^0.4.1",
+    "knex": "^0.95.14",
+    "mysql2": "^2.3.3-rc.0"
+  }
+}
