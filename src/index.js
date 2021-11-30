@@ -219,7 +219,7 @@ function render_hash(value)
 function log(line)
 {
     const elapsed = Date.now() - started.getTime();
-    console.log(`[${format_ms_human(elapsed)}][${format_bytes_kb(process.memoryUsage().heapUsed).padStart(5, ' ')}] ${line}`);
+    process.stderr.write(`[${format_ms_human(elapsed)}][${format_bytes_kb(process.memoryUsage().heapUsed).padStart(5, ' ')}] ${line}\n`);
 }
 
 async function stream_data_ln(stream, fn)
