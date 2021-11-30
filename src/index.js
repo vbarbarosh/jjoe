@@ -199,14 +199,19 @@ async function step3_remove(uids, stat)
     log('Removing...');
     const progress = progress_begin(uids.length);
     const chunks = array_chunk(uids, 1000);
+    let time0 = new Date();
     let removed = 0;
     for (let i = 0, end = chunks.length; i < end; ++i) {
         const ids = await db('items').whereIn('uid', chunks[i]).pluck('id');
         await db('diffs').whereIn('item_id', ids).del();
         stat.removed = (removed += await db('items').whereIn('id', ids).del());
         progress_update(progress, ids.length);
-        log(`Removing: ${progress_render(progress)}`);
+        if (Date.now() - time0 >= 1000) {
+            log(`Removing: ${progress_render(progress)}`);
+            time0 = Date.now();
+        }
     }
+    log(`Removing: ${progress_render(progress)}`);
     assert(removed == uids.length);
 }
 
