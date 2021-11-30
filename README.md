@@ -23,7 +23,7 @@ useful to track changes in these objects.
 ## How it works
 
 `bin/run` takes from `stdout` a stream of JSON objects (first line should
-contain expected number of objects or be empty). Parses each object and updates
+contain expected number of objects or be empty), parses each object and updates
 database.
 
 Each object should consist of just two properties: `uid` and `value`. Objects
