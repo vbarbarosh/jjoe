@@ -181,13 +181,13 @@ async function step2_2_upsert(items, update_id, stat)
         }
     });
     assert(update_items.length == insert_diffs.length);
-    stat.inserted += insert_items.length;
-    stat.updated += update_items.length;
     if (insert_items.length) {
         await db('items').insert(insert_items);
+        stat.inserted += insert_items.length;
     }
     if (update_items.length) {
         await db('items').insert(update_items).onConflict().merge(['hash', 'value', 'updated_at']);
+        stat.updated += update_items.length;
     }
     if (insert_diffs.length) {
         await db('diffs').insert(insert_diffs);
@@ -203,11 +203,10 @@ async function step3_remove(uids, stat)
     for (let i = 0, end = chunks.length; i < end; ++i) {
         const ids = await db('items').whereIn('uid', chunks[i]).pluck('id');
         await db('diffs').whereIn('item_id', ids).del();
-        removed += await db('items').whereIn('id', ids).del();
+        stat.removed = (removed += await db('items').whereIn('id', ids).del());
         progress_update(progress, ids.length);
         log(`Removing: ${progress_render(progress)}`);
     }
-    stat.removed = removed;
     assert(removed == uids.length);
 }
 
