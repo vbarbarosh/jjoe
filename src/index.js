@@ -26,7 +26,7 @@ async function main()
     const uids_prev_map = await step1_fetch_uids();
     const uids_next_map = {};
     const stat = {
-        checked: 0,
+        total: 0,
         broken: 0,
         inserted: 0,
         updated: 0,
@@ -50,7 +50,7 @@ async function main()
                 progress = progress_begin(parseInt(line));
                 return;
             }
-            stat.checked++;
+            stat.total++;
             const item = JSON.parse(line);
             if (!item.uid) {
                 log(`Warning: missing uid: ${JSON.stringify(line)}`);
@@ -88,14 +88,21 @@ async function main()
         log(`Processing: ${progress_render(progress)}; ${stat.inserted}/${stat.updated}/${stat.removed}`);
         const uids_remove = Object.keys(uids_prev_map).filter(v => !uids_next_map[v]);
         await step3_remove(uids_remove, stat);
-        await db('updates').where('id', update.id).update({title: 'Done', finished_at: new Date()});
+        await db('updates').where('id', update.id).update({
+            title: 'Done',
+            updated_at: new Date(),
+            finished_at: new Date(),
+            ...stat,
+        });
     }
     catch (error) {
         log(`Error: ${JSON.stringify(error.message)}`);
         await db('updates').where('id', update.id).update({
             title: 'Failed',
             error: error.message.substr(0, 2048) + '\n[...]\n' +  error.message.substr(-1024),
+            updated_at: new Date(),
             finished_at: new Date(),
+            ...stat,
         });
     }
     log(`Done ${JSON.stringify(stat)}`);

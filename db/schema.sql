@@ -82,6 +82,11 @@ CREATE TABLE `updates` (
   `id` int NOT NULL AUTO_INCREMENT,
   `uid` varchar(64) NOT NULL,
   `title` varchar(255) NOT NULL,
+  `total` int DEFAULT NULL,
+  `broken` int DEFAULT NULL,
+  `inserted` int DEFAULT NULL,
+  `updated` int DEFAULT NULL,
+  `removed` int DEFAULT NULL,
   `error` text,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
@@ -90,6 +95,3 @@ CREATE TABLE `updates` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
-
-
--- 2021-11-28 20:03:32
