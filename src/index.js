@@ -3,7 +3,7 @@
 import * as jsondiffpatch from 'jsondiffpatch';
 import Promise from 'bluebird';
 import array_chunk from '@vbarbarosh/node-helpers/src/array_chunk';
-import array_index from './helpers/array_index';
+import array_index from '@vbarbarosh/node-helpers/src/array_index';
 import assert from 'assert';
 import crypto_hash_sha256 from '@vbarbarosh/node-helpers/src/crypto_hash_sha256';
 import cuid from 'cuid';
