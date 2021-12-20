@@ -15,7 +15,7 @@ import progress_begin from './helpers/progress_begin';
 import progress_render from './helpers/progress_render';
 import progress_update from './helpers/progress_update';
 
-const db = knex({client: 'mysql2', connection: 'mysql://jjoe:jjoe@127.0.0.1:3306/jjoe'});
+const db = knex({client: 'mysql2', connection: 'mysql://jsonstory:jsonstory@127.0.0.1:3306/jsonstory'});
 const started = new Date();
 
 Promise.resolve(main()).finally(() => db.destroy());

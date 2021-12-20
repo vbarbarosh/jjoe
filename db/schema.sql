@@ -1,11 +1,11 @@
 -- DB_HOST=127.0.0.1
 -- DB_PORT=3306
--- DB_DATABASE=jjoe
--- DB_USERNAME=jjoe
--- DB_PASSWORD=jjoe
+-- DB_DATABASE=jsonstory
+-- DB_USERNAME=jsonstory
+-- DB_PASSWORD=jsonstory
 --
 -- drop database
-    DROP DATABASE IF EXISTS jjoe;
+    DROP DATABASE IF EXISTS jsonstory;
 
     -- Bug #19166  DROP USER IF EXISTS
     -- http://bugs.mysql.com/bug.php?id=19166
@@ -28,19 +28,19 @@
     -- > utf8_general_ci by default for any character columns.
 
 -- create database
-    CREATE DATABASE jjoe
+    CREATE DATABASE jsonstory
         DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 
 -- create user
-    DROP USER IF EXISTS 'jjoe'@'127.0.0.1';
-    CREATE USER 'jjoe'@'127.0.0.1' IDENTIFIED BY 'jjoe';
-    GRANT ALL ON jjoe.* TO 'jjoe'@'127.0.0.1';
+    DROP USER IF EXISTS 'jsonstory'@'127.0.0.1';
+    CREATE USER 'jsonstory'@'127.0.0.1' IDENTIFIED BY 'jsonstory';
+    GRANT ALL ON jsonstory.* TO 'jsonstory'@'127.0.0.1';
 --
 -- DB_HOST=127.0.0.1
 -- DB_PORT=3306
--- DB_DATABASE=jjoe
--- DB_USERNAME=jjoe
--- DB_PASSWORD=jjoe
+-- DB_DATABASE=jsonstory
+-- DB_USERNAME=jsonstory
+-- DB_PASSWORD=jsonstory
 
 
 -- Adminer 4.7.1 MySQL dump
@@ -50,7 +50,7 @@ SET time_zone = '+00:00';
 SET foreign_key_checks = 0;
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 
-USE `jjoe`;
+USE `jsonstory`;
 
 CREATE TABLE `diffs` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
