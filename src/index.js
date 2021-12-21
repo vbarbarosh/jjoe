@@ -165,6 +165,7 @@ async function step2_2_upsert(items, update_id, stat)
                 updated_at: new Date(),
             });
             insert_diffs.push({
+                uid: cuid(),
                 item_id: prev.id,
                 update_id,
                 diff: JSON.stringify(diff),

@@ -54,6 +54,7 @@ USE `jsonstory`;
 
 CREATE TABLE `diffs` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `uid` varchar(64) NOT NULL,
   `item_id` int unsigned NOT NULL,
   `update_id` int NOT NULL,
   `diff` json NOT NULL,
@@ -61,6 +62,7 @@ CREATE TABLE `diffs` (
   PRIMARY KEY (`id`),
   KEY `item_id` (`item_id`),
   KEY `update_id` (`update_id`),
+  UNIQUE KEY `uid` (`uid`),
   CONSTRAINT `diffs_ibfk_1` FOREIGN KEY (`item_id`) REFERENCES `items` (`id`),
   CONSTRAINT `diffs_ibfk_2` FOREIGN KEY (`update_id`) REFERENCES `updates` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
