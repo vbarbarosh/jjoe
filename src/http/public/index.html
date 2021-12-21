@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://unpkg.com/@vbarbarosh/smcss@0.6.1/dist/sm.css" rel="stylesheet" />
+    <title>jsonstory</title>
+</head>
+<body>
+
+<br>
+
+<div id="app">
+
+    <ul class="xls xm xp flex-row flex-align-center mi15 white pv10 ph15 bs5 sticky-t">
+        <li v-for="tab in tabs" v-bind:key="tab.name">
+            <strong v-if="tab.is_active">
+                {{ tab.title }}
+            </strong>
+            <a v-else v-on:click.prevent="click_tab(tab)" href="#">
+                {{ tab.title }}
+            </a>
+        </li>
+    </ul>
+    <div v-show="tabs_map.updates.is_active" class="fluid oa">
+        <div v-for="item in updates" v-bind:key="item.uid">
+            <pre class="border">{{ item }}</pre>
+        </div>
+    </div>
+    <div v-show="tabs_map.items.is_active" class="fluid oa">
+        <div v-for="item in items" v-bind:key="item.uid">
+            <pre class="border">{{ item }}</pre>
+        </div>
+    </div>
+    <div v-show="tabs_map.diffs.is_active" class="fluid oa">
+        <br>
+        Tab for <strong>diffs</strong>
+    </div>
+
+</div>
+
+<script src="https://unpkg.com/cuid@2.1.8/dist/cuid.min.js"></script>
+<script src="https://unpkg.com/axios@0.24.0/dist/axios.min.js"></script>
+<script src="https://unpkg.com/jquery@3.5.1/dist/jquery.js"></script>
+<script src="https://unpkg.com/bluebird@3.7.2/js/browser/bluebird.js"></script>
+<script src="https://unpkg.com/vue@2.6.11/dist/vue.js"></script>
+
+<script>
+(function () {
+
+    const app = new Vue({
+        el: '#app',
+        data: {
+            items: [],
+            updates: [],
+            loading: [],
+            tabs: [
+                {name: 'updates', title: 'Updates', is_active: true},
+                {name: 'items', title: 'Items', is_active: false},
+                {name: 'diffs', title: 'Diffs', is_active: false},
+            ],
+        },
+        computed: {
+            tabs_map: function () {
+                return array_index(this.tabs, v => v.name);
+            },
+            is_loading: function () {
+                return this.loading.length > 0;
+            },
+        },
+        watch: {
+            items: function (next) {
+                this.tabs_map.items.title = `Items [${next.length}]`;
+            },
+            updates: function (next) {
+                this.tabs_map.updates.title = `Updates [${next.length}]`;
+            },
+            diffs: function (next) {
+                this.tabs_map.diffs.title = `Diffs [${next.length}]`;
+            },
+        },
+        methods: {
+            load_items: am(async function () {
+                const uid = cuid();
+                this.loading.push(uid);
+                try {
+                    this.items = await api_items_list();
+                }
+                finally {
+                    const i = this.loading.indexOf();
+                    if (i != -1) {
+                        this.loading.splice(i, 1);
+                    }
+                }
+            }),
+            load_updates: am(async function () {
+                const uid = cuid();
+                this.loading.push(uid);
+                try {
+                    const tmp = await api_updates_list();
+                    this.updates = tmp.sort(fcmp_created_at_desc);
+                }
+                finally {
+                    const i = this.loading.indexOf();
+                    if (i != -1) {
+                        this.loading.splice(i, 1);
+                    }
+                }
+            }),
+            click_tab: function (tab) {
+                const _this = this;
+                this.tabs.forEach(v => v.is_active = (v === tab));
+                switch (tab.name) {
+                case 'items':
+                    break;
+                case 'updates':
+                    break;
+                }
+            },
+        },
+        created: function () {
+            this.load_items();
+            this.load_updates();
+        },
+    });
+
+    function am(fn)
+    {
+        return function () {
+            return fn.apply(this, arguments);
+        };
+    }
+
+    function fcmp_created_at_desc(b, a)
+    {
+        return a.created_at.localeCompare(b.created_at);
+    }
+
+    /**
+     * Convert an array of items into a hash map
+     *
+     * @param items
+     * @param fn
+     * @returns {{}}
+     * @link https://stackoverflow.com/questions/26264956/convert-object-array-to-hash-map-indexed-by-an-attribute-value-of-the-object
+     */
+    function array_index(items, fn)
+    {
+        const out = {};
+        items.forEach(v => out[fn(v)] = v);
+        return out;
+    }
+
+    function http_get_json(url, options)
+    {
+        return axios.get(url, options).then(v => v.data);
+    }
+
+    function api_items_list()
+    {
+        return http_get_json('/api/v1/items.json');
+    }
+
+    function api_diffs_list()
+    {
+        return http_get_json('/api/v1/diffs.json');
+    }
+
+    function api_updates_list()
+    {
+        return http_get_json('/api/v1/updates.json');
+    }
+
+})();
+</script>
+
+</body>
+</html>
