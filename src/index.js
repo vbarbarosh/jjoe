@@ -204,7 +204,8 @@ async function step3_remove(uids, stat)
     for (let i = 0, end = chunks.length; i < end; ++i) {
         const ids = await db('items').whereIn('uid', chunks[i]).pluck('id');
         await db('diffs').whereIn('item_id', ids).del();
-        stat.removed = (removed += await db('items').whereIn('id', ids).del());
+        removed += await db('items').whereIn('id', ids).del();
+        stat.removed = removed;
         progress_update(progress, ids.length);
         if (Date.now() - time0 >= 1000) {
             log(`Removing: ${progress_render(progress)}`);
