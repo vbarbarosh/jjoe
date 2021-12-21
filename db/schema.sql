@@ -70,7 +70,7 @@ CREATE TABLE `items` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `uid` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `hash` varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
-  `value` json NOT NULL,
+  `value` json DEFAULT NULL,
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),

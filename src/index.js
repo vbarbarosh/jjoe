@@ -87,7 +87,8 @@ async function main()
         }
         log(`Processing: ${progress_render(progress)}; ${stat.inserted}/${stat.updated}/${stat.removed}`);
         const uids_remove = Object.keys(uids_prev_map).filter(v => !uids_next_map[v]);
-        await step3_remove(uids_remove, stat);
+        await step2_2_upsert(uids_remove.map(uid => ({uid, hash: render_hash(null), value: null})), update.id, stat);
+        // await step3_remove(uids_remove, stat);
         await db('updates').where('id', update.id).update({
             title: 'Done',
             updated_at: new Date(),
@@ -96,7 +97,7 @@ async function main()
         });
     }
     catch (error) {
-        log(`Error: ${JSON.stringify(error.message)}`);
+        log(`Error: ${JSON.stringify(`${error.message} at ${error.stack}`)}`);
         await db('updates').where('id', update.id).update({
             title: 'Failed',
             error: error.message.substr(0, 2048) + '\n[...]\n' +  error.message.substr(-1024),
