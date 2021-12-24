@@ -1,10 +1,11 @@
+import array_group_map from '@vbarbarosh/node-helpers/src/array_group_map';
+import array_index from '@vbarbarosh/node-helpers/src/array_index';
 import cli from '@vbarbarosh/node-helpers/src/cli';
 import express from 'express';
 import express_routes from '@vbarbarosh/express-helpers/src/express_routes';
 import express_run from '@vbarbarosh/express-helpers/src/express_run';
 import fs_path_resolve from '@vbarbarosh/node-helpers/src/fs_path_resolve';
 import knex from 'knex';
-import array_index from '@vbarbarosh/node-helpers/src/array_index';
 
 const db = knex({client: 'mysql2', connection: 'mysql://jsonstory:jsonstory@127.0.0.1:3306/jsonstory'});
 const started = new Date();
@@ -29,12 +30,12 @@ async function main()
 
 async function updates_list(req, res)
 {
-    res.json(await db('updates').then(strip_ids));
+    res.json(await db('updates').then(prep_updates));
 }
 
 async function items_list(req, res)
 {
-    res.json(await db('items').then(strip_ids));
+    res.json(await db('items').then(prep_items));
 }
 
 async function diffs_list(req, res)
@@ -45,6 +46,42 @@ async function diffs_list(req, res)
 async function page404(req, res)
 {
     res.status(404).send(`Page not found: ${req.path}`);
+}
+
+async function prep_items(items)
+{
+    const ids = items.map(v => v.id);
+    const diffs = await db('diffs').whereIn('item_id', ids);
+    const diffs_prep = await prep_diffs(diffs);
+    const diffs_prep_map = array_group_map(diffs_prep, v => v.item_uid);
+    return JSON.parse(JSON.stringify(items)).map(function (item) {
+        item.diffs = diffs_prep_map[item.uid] ? diffs_prep_map[item.uid].items : [];
+        delete item.id;
+        return item;
+    });
+}
+
+async function prep_updates(updates)
+{
+    const ids = updates.map(v => v.id);
+    const [tmp] = await db.raw(`
+        SELECT
+            update_id,
+            COUNT(*) AS diffs_count
+        FROM
+            diffs
+        WHERE
+            update_id IN (${ids.slice().fill('?')})
+        GROUP BY
+            update_id
+    `, ids);
+    const diffs_count = {};
+    tmp.forEach(v => diffs_count[v.update_id] = v.diffs_count);
+    return JSON.parse(JSON.stringify(updates)).map(function (update) {
+        update.diffs_count = diffs_count[update.id] || 0;
+        delete update.id;
+        return update;
+    });
 }
 
 async function prep_diffs(diffs)

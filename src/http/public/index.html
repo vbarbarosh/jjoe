@@ -33,8 +33,9 @@
         </div>
     </div>
     <div v-show="tabs_map.diffs.is_active" class="fluid oa">
-        <br>
-        Tab for <strong>diffs</strong>
+        <div v-for="item in diffs" v-bind:key="item.uid">
+            <pre class="border">{{ item }}</pre>
+        </div>
     </div>
 
 </div>
@@ -53,6 +54,7 @@
         data: {
             items: [],
             updates: [],
+            diffs: [],
             loading: [],
             tabs: [
                 {name: 'updates', title: 'Updates', is_active: true},
@@ -84,10 +86,11 @@
                 const uid = cuid();
                 this.loading.push(uid);
                 try {
-                    this.items = await api_items_list();
+                    const tmp = await api_items_list();
+                    this.items = tmp.sort(fcmp_updated_at_desc);
                 }
                 finally {
-                    const i = this.loading.indexOf();
+                    const i = this.loading.indexOf(uid);
                     if (i != -1) {
                         this.loading.splice(i, 1);
                     }
@@ -101,7 +104,21 @@
                     this.updates = tmp.sort(fcmp_created_at_desc);
                 }
                 finally {
-                    const i = this.loading.indexOf();
+                    const i = this.loading.indexOf(uid);
+                    if (i != -1) {
+                        this.loading.splice(i, 1);
+                    }
+                }
+            }),
+            load_diffs: am(async function () {
+                const uid = cuid();
+                this.loading.push(uid);
+                try {
+                    const tmp = await api_diffs_list();
+                    this.diffs = tmp.sort(fcmp_created_at_desc);
+                }
+                finally {
+                    const i = this.loading.indexOf(uid);
                     if (i != -1) {
                         this.loading.splice(i, 1);
                     }
@@ -121,6 +138,7 @@
         created: function () {
             this.load_items();
             this.load_updates();
+            this.load_diffs();
         },
     });
 
@@ -134,6 +152,11 @@
     function fcmp_created_at_desc(b, a)
     {
         return a.created_at.localeCompare(b.created_at);
+    }
+
+    function fcmp_updated_at_desc(b, a)
+    {
+        return a.updated_at.localeCompare(b.updated_at);
     }
 
     /**
