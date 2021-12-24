@@ -40,6 +40,7 @@
 
 </div>
 
+<script src="https://unpkg.com/urijs@1.19.7/src/URI.js"></script>
 <script src="https://unpkg.com/cuid@2.1.8/dist/cuid.min.js"></script>
 <script src="https://unpkg.com/axios@0.24.0/dist/axios.min.js"></script>
 <script src="https://unpkg.com/jquery@3.5.1/dist/jquery.js"></script>
@@ -86,7 +87,7 @@
                 const uid = cuid();
                 this.loading.push(uid);
                 try {
-                    const tmp = await api_items_list();
+                    const tmp = await list_all(api_items_list);
                     this.items = tmp.sort(fcmp_updated_at_desc);
                 }
                 finally {
@@ -100,7 +101,7 @@
                 const uid = cuid();
                 this.loading.push(uid);
                 try {
-                    const tmp = await api_updates_list();
+                    const tmp = await list_all(api_updates_list);
                     this.updates = tmp.sort(fcmp_created_at_desc);
                 }
                 finally {
@@ -114,7 +115,7 @@
                 const uid = cuid();
                 this.loading.push(uid);
                 try {
-                    const tmp = await api_diffs_list();
+                    const tmp = await list_all(api_diffs_list);
                     this.diffs = tmp.sort(fcmp_created_at_desc);
                 }
                 finally {
@@ -159,6 +160,27 @@
         return a.updated_at.localeCompare(b.updated_at);
     }
 
+    async function list_all(fn, options = {})
+    {
+        let total = 1;
+        const out = [];
+        for (let i = 0; i < 50 && out.length < total; ++i) {
+            options.offset = out.length || undefined;
+            const response = await fn(options);
+            const items = (response.items || response.rows);
+            total = response.total;
+            out.push(...items);
+            // XXX For cases when backend returns total:5 but items:4
+            if (response.limit > items.length) {
+                // if (total != out.length && __DEV__) {
+                //     console.warn('query_all2', `total[${total}] != items[${out.length}]`);
+                // }
+                break;
+            }
+        }
+        return out;
+    }
+
     /**
      * Convert an array of items into a hash map
      *
@@ -179,19 +201,20 @@
         return axios.get(url, options).then(v => v.data);
     }
 
-    function api_items_list()
+    function api_items_list(query)
     {
-        return http_get_json('/api/v1/items.json');
+
+        return http_get_json(URI('/api/v1/items.json').query(query).toString());
     }
 
-    function api_diffs_list()
+    function api_diffs_list(query)
     {
-        return http_get_json('/api/v1/diffs.json');
+        return http_get_json(URI('/api/v1/diffs.json').query(query).toString());
     }
 
-    function api_updates_list()
+    function api_updates_list(query)
     {
-        return http_get_json('/api/v1/updates.json');
+        return http_get_json(URI('/api/v1/updates.json').query(query).toString());
     }
 
 })();

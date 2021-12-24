@@ -7,15 +7,14 @@ import array_index from '@vbarbarosh/node-helpers/src/array_index';
 import assert from 'assert';
 import crypto_hash_sha256 from '@vbarbarosh/node-helpers/src/crypto_hash_sha256';
 import cuid from 'cuid';
+import db from './db';
 import format_bytes_kb from './helpers/format_bytes_kb';
 import format_ms_human from './helpers/format_ms_human';
 import json_stringify_stable from 'json-stable-stringify';
-import knex from 'knex';
 import progress_begin from './helpers/progress_begin';
 import progress_render from './helpers/progress_render';
 import progress_update from './helpers/progress_update';
 
-const db = knex({client: 'mysql2', connection: 'mysql://jsonstory:jsonstory@127.0.0.1:3306/jsonstory'});
 const started = new Date();
 
 Promise.resolve(main()).finally(() => db.destroy());
