@@ -27,5 +27,5 @@ async function main()
         right[json.uid] = json.value;
     });
 
-    console.log(jsondiffpatch.diff(left, right));
+    jsondiffpatch.console.log(jsondiffpatch.diff(left, right));
 }
