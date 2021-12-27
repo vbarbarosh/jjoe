@@ -1,13 +1,13 @@
 import array_group_map from '@vbarbarosh/node-helpers/src/array_group_map';
 import array_index from '@vbarbarosh/node-helpers/src/array_index';
 import cli from '@vbarbarosh/node-helpers/src/cli';
-import db from '../db';
+import db from '../helpers/db';
 import express from 'express';
 import express_routes from '@vbarbarosh/express-helpers/src/express_routes';
 import express_run from '@vbarbarosh/express-helpers/src/express_run';
-import filters from '../db/filters';
+import filters from '../helpers/db/filters';
 import fs_path_resolve from '@vbarbarosh/node-helpers/src/fs_path_resolve';
-import pager from '../db/pager';
+import pager from '../helpers/db/pager';
 
 const started = new Date();
 

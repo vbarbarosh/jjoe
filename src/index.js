@@ -7,7 +7,7 @@ import array_index from '@vbarbarosh/node-helpers/src/array_index';
 import assert from 'assert';
 import crypto_hash_sha256 from '@vbarbarosh/node-helpers/src/crypto_hash_sha256';
 import cuid from 'cuid';
-import db from './db';
+import db from './helpers/db';
 import format_bytes_kb from './helpers/format_bytes_kb';
 import format_ms_human from './helpers/format_ms_human';
 import json_stringify_stable from 'json-stable-stringify';
