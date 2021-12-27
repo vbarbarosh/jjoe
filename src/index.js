@@ -19,6 +19,36 @@ const started = new Date();
 
 Promise.resolve(main()).finally(() => db.destroy());
 
+// How to rollback to a specific version:
+//
+//     const items = await db('items');
+//     const diffs = await db('diffs').orderBy('id');
+//     const items_diffs = array_group_map(diffs, v => v.item_id);
+//     const diff_end = Math.max(0, ...Object.values(items_diffs).map(v => v.items.length));
+//     for (let diff_i = 0; diff_i < diff_end; ++diff_i) {
+//         const story = items.map(function (item) {
+//             const d = items_diffs[item.id];
+//             if (!d) {
+//                 return item;
+//             }
+//             item = JSON.parse(JSON.stringify(item));
+//             for (let i = d.items.length; --i >= diff_i; ) {
+//                 item.value = jsondiffpatch.unpatch(item.value, d.items[i].diff);
+//             }
+//             item.updated_at = d.items[Math.min(diff_i, d.items.length-1)].created_at;
+//             return item;
+//         });
+//         const mig = story.map(migrate);
+//         const date = story.filter(v => v.id == 14)[0].updated_at;
+//         console.log(story.length, date);
+//         mig.forEach(v => console.log(JSON.stringify(v)));
+//         console.log('\n\n\n');
+//     }
+//     return;
+//     function migrate(item) {
+//         return {url: item.value.url, ...item.value.meta, error: item.value.error};
+//     }
+
 async function main()
 {
     // Fetch uids before making any inserts.
