@@ -55,6 +55,7 @@ USE `jsonstory`;
 CREATE TABLE `diffs` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `uid` varchar(64) NOT NULL,
+  `hash` varbinary(64) NOT NULL COMMENT 'A hash of a value BEFORE applying diff. Should be used for integrity checking after rolling back.',
   `item_id` int unsigned NOT NULL,
   `update_id` int NOT NULL,
   `diff` json NOT NULL,
