@@ -27,5 +27,11 @@ async function main()
         right[json.uid] = json.value;
     });
 
+    // node_modules/jsondiffpatch/dist/jsondiffpatch.cjs.js
+    // - pieceOutput.text = piece.slice(1);
+    // + pieceOutput.text = decodeURI(piece.slice(1));
+    const parseTextDiff = jsondiffpatch.console.default.prototype.parseTextDiff.toString().replace('pieceOutput.text = piece.slice(1)', 'pieceOutput.text = decodeURI(piece.slice(1))');
+    jsondiffpatch.console.default.prototype.parseTextDiff = new Function(`return ${parseTextDiff}`)();
+
     jsondiffpatch.console.log(jsondiffpatch.diff(left, right));
 }
